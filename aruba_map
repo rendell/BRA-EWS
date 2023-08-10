@@ -1,0 +1,36 @@
+---
+title: "BRA"
+format: html
+editor: visual
+---
+
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(OpenStreetMap)
+library(sf)
+library(treemap)
+library(ggplot2)
+```
+
+
+# Shapefile
+```{r, eval=FALSE, include=FALSE}
+temp_shapefile <- tempfile()
+download.file("https://github.com/rendell/futura/raw/main/GAC_Regios_WGS1984.zip", temp_shapefile)
+unzip(temp_shapefile)
+
+shape<- st_read("GAC_Regios_WGS1984.shp")
+#To add the regions by colour
+shape$region<- c("#418fde","#67A5E4","#8DBBEB","#67A5E4","#67A5E4","#B3D2F1","#B3D2F1","#67A5E4")
+#plot
+ggplot() + 
+geom_sf(data = shape, size = 0.1, color = "black", fill = shape$region) + 
+coord_sf() + theme(panel.background = element_blank(),
+                   axis.text.x=element_blank(), #remove x axis labels
+        axis.ticks.x=element_blank(), #remove x axis ticks
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank()  #remove y axis ticks
+                   )
+```
