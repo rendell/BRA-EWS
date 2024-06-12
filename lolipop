@@ -1,0 +1,59 @@
+# Define the mapping from qualitative to numeric values
+concern_levels <- c(
+  "Not Concerned" = 1,
+  "Slightly Concerned" = 2,
+  "Moderately Concerned" = 3,
+  "Very Concerned" = 4,
+  "Extremely Concerned" = 5
+)
+
+# Rename the variable "Which.organization.do.you.represent." to "Cluster"
+data_long <- Responses_EWS %>%
+  rename(Cluster = Which.organization.do.you.represent.)
+
+# Rename columns 5 to 12
+names(data_long)[5:12] <- c(
+  "Chemical release", 
+  "Flash Flood", 
+  "Hazardous Material Incident", 
+  "Hurricane", 
+  "National Security incident", 
+  "Severe Weather", 
+  "Terrorist attack", 
+  "Tsunami"
+)
+
+# Convert qualitative data to numeric
+data_numeric <- data_long %>%
+mutate(across(
+`Chemical release`:`Tsunami`, 
+~concern_levels[.], 
+.names = "{.col}"
+))
+
+# Fix Cluster column 
+# Trim the content of the observations in the "Cluster" variable to only the first 9 characters
+data_numeric <- data_numeric %>%
+mutate(Cluster = str_sub(Cluster, 1, 9))
+
+# Calculate the average concern level for each cluster and each hazard
+avg_concern_cluster <- data_numeric %>%
+  group_by(Cluster) %>%
+  summarise(across(c("Chemical release", "Flash Flood", "Hazardous Material Incident", "Hurricane", "National Security incident", "Severe Weather", "Terrorist attack", "Tsunami"), mean, na.rm = TRUE), .groups = 'drop')
+
+
+
+# Merge the overall average concern level with the cluster average concern levels
+# Here it goes wrong ********************************
+  
+  
+# Plot the lollipop chart
+ggplot(avg_combined, aes(x = Which.organization.do.you.represent., y = Cluster_Avg_Concern)) +
+  geom_point(aes(color = Which.organization.do.you.represent.), size = 3) +
+  geom_segment(aes(xend = Which.organization.do.you.represent., yend = 0), color = "blue") +
+  geom_point(data = avg_combined %>% filter(Which.organization.do.you.represent. != "Overall"), aes(color = Which.organization.do.you.represent.), size = 2) +
+  coord_flip() +
+  labs(x = "Cluster", y = "Average Concern Level") +
+  scale_color_manual(values = c("blue" = "blue", "gray" = "gray")) +
+  theme_minimal() +
+  theme(legend.position = "none")
