@@ -9,7 +9,7 @@ concern_levels <- c(
 
 # Rename the variable "Which.organization.do.you.represent." to "Cluster"
 data_long <- Responses_EWS %>%
-  rename(Cluster = Which.organization.do.you.represent.)
+  rename(Cluster = "Which organization do you represent?")
 
 # Rename columns 5 to 12
 names(data_long)[5:12] <- c(
@@ -80,5 +80,8 @@ ggplot(plot_data, aes(x = Overall_Avg_Concern, y = Hazard, group = 1)) +
   labs(x = "Average Concern Level", y = "Hazard") +
   theme_minimal() +
   theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
-  guides(color = FALSE)  # Remove legend for Cluster color
+  guides(color = FALSE)  # Remove legend for Cluster color + 
+  theme(text = element_text(family = "lato"))
   
+
+
